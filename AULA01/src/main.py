@@ -22,6 +22,6 @@ async def mostraParametro(parameterID):
 async def criarAluno(aluno : Aluno):
     return aluno
 
-# pip install fastapi
-# pip install uvicorn
-# uvicorn main:app --reload
+
+
+# uvicorn src.main:app --reload
