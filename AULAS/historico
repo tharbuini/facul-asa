@@ -3,13 +3,13 @@ python3 -m venv venv
 source venv/bin/activate
 
 #### CRIAR IMAGEM DO DOCKER ####
-docker build --tag asa_coop .
+sudo docker build --tag asa_coop .
 
 -- no exemplo acima, será criada uma imagem chamada asa_coop, e o . indica que, no diretório atual, existirá um arquivo Dockerfile
 
 
 #### RODANDO O DOCKER A PARTIR DA IMAGEM ####
-docker run --rm -p 8000:8000 asa_coop
+sudo docker run --rm -p 8000:8000 asa_coop
 
 --- no exemplo acima, será executado um contêiner, com as seguintes opções:
 --> --rm: esse comando indica que o contêiner será removido após o usuário sair com o comando exit
