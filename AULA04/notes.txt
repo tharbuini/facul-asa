@@ -1,0 +1,14 @@
+### Comando do docker para rodar postgresql com volume persistido. ###
+docker run --name postgreSQL_SERVER -e POSTGRES_PASSWORD=banco -e POSTGRES_USER=postgres -p 5432:5432 -v /home/marciocunha/util/postgresData:/var/lib/postgresql/data -d postgres:14
+
+## main.py ##
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {
+        "status": "SUCESS",
+        "data": "NO DATA"
+    }
