@@ -1,14 +1,60 @@
+
+### Passos
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install fastapi, uvicorn, sqlalchemy
+    uvicorn src.main:app --reload
+
+
 ### Comando do docker para rodar postgresql com volume persistido. ###
-docker run --name postgreSQL_SERVER -e POSTGRES_PASSWORD=banco -e POSTGRES_USER=postgres -p 5432:5432 -v /home/marciocunha/util/postgresData:/var/lib/postgresql/data -d postgres:14
+    docker run --name postgreSQL_SERVER -e POSTGRES_PASSWORD=banco -e POSTGRES_USER=postgres -p 5432:5432 -v /home/marciocunha/util/postgresData:/var/lib/postgresql/data -d postgres:14
 
-## main.py ##
-from fastapi import FastAPI, Request
+### Código do main.py
+    from fastapi import FastAPI, Request
 
-app = FastAPI()
+    app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {
-        "status": "SUCESS",
-        "data": "NO DATA"
+    @app.get("/")
+    async def root():
+        return {
+            "status": "SUCESS",
+            "data": "NO DATA"
+        }
+    @app.post("/alunos")
+    async def criar_aluno(request_aluno: Request_Aluno):
+        aluno_json = request_aluno
+        print(aluno_json.nome)
+
+        return {
+            "status": "SUCESS",
+            "data": aluno_json
+        }
+
+### Código do launch.json
+    {
+        // Use IntelliSense to learn about possible attributes.
+        // Hover to view descriptions of existing attributes.
+        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Python: Module",
+                "type": "python",
+                "request": "launch",
+                "module": "uvicorn",
+                "args": ["main:app", "--reload"],
+                "justMyCode": true
+            }
+        ]
     }
+
+
+### Código do classes.py
+    from pydantic import BaseModel
+
+    class Request_Aluno(BaseModel):
+        id:         int
+        nome:       str
+        email:      str
+        cpf:        str
+        endereco:   str
