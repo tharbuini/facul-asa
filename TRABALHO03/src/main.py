@@ -22,7 +22,7 @@ config = {
 async def root():
     return {
         "status": "SUCESS",
-        "data": "NO DATAS"
+        "data": "NO DATA"
     }
 
 @app.get("/alunos")

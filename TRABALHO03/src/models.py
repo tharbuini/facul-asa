@@ -63,6 +63,5 @@ class CursoProfessor(Base):
 Base.metadata.create_all(engine)
 
 
-#docker run --name postgreSQL_SERVER -e POSTGRES_PASSWORD=banco -e POSTGRES_USER=postgres -p 5432:5432 
-# -v /home/marciocunha/util/postgresData:/var/lib/postgresql/data -d postgres:14
+# docker run --name postgreSQL_SERVER -e POSTGRES_PASSWORD=banco -e POSTGRES_USER=postgres -p 5432:5432 -v -d postgres:14
 
