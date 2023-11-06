@@ -1,0 +1,6 @@
+
+Criar todos métodos para curso, professor, curso_professor, curso_aluno
+
+
+docker start 1de6f
+uvicorn main:app --reload
