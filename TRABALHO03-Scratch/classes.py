@@ -18,11 +18,10 @@ class Request_Curso(BaseModel):
     id:         int
     descricao:  str
 
-class Request_Aluno_Curso(BaseModel):
+class Request_Curso_Aluno(BaseModel):
     id_aluno:   int
-    nome:       str
-    email:      str
-    cpf:        str
-    endereco:   str
     id_curso:   int
-    descricao:  str
+
+class Request_Curso_Professor(BaseModel):
+    id_professor:   int
+    id_curso:   int

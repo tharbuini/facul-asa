@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from classes import Request_Aluno, Request_Professor, Request_Curso
+from classes import Request_Aluno, Request_Professor, Request_Curso, Request_Curso_Aluno, Request_Curso_Professor
 from model import Aluno, Professor, Curso, CursoAluno, CursoProfessor, session
 from publisher import Publisher
 import logging
@@ -13,9 +13,8 @@ logger.setLevel(logging.DEBUG)
 app = FastAPI()
 
 config = {
-     'host': 'rabbitmq-service',
-     'port': 5672, 
-     'exchange' : 'alunos'
+    'host': 'localhost',
+    'port': 5672
 }
 
 @app.get("/")
@@ -27,7 +26,7 @@ async def root():
 
 ## ----------------------- ALUNOS ----------------------- 
 @app.get("/alunos")
-async def get_all_alunos():
+async def get_alunos():
     alunos_query = session.query(Aluno)
     alunos = alunos_query.all()
     return {
@@ -121,9 +120,11 @@ async def get_all_alunos():
             aluno_serializer = Request_Aluno(**item)            
             alunos_to_send.append(aluno_serializer)
         
-        publisher = Publisher(config)  
+        publisher = Publisher(config, 'alunos')  
         logger.info('Enviando mensagem para o RabbitMQ')       
-        publisher.publish('routing_key', aluno_serializer.model_dump_json().encode())
+
+        for aluno in alunos_to_send:
+            publisher.publish('routing_key', aluno.model_dump_json().encode())
     except Exception as e:
          logger.error(f'Erro na consulta dos alunos -- get_all_alunos() -- {e}')
          print(e)
@@ -135,7 +136,7 @@ async def get_all_alunos():
 
 ## ----------------------- PROFESSOR -----------------------
 @app.get("/professores")
-async def get_all_professores():
+async def get_professores():
     professores_query = session.query(Professor)
     professores = professores_query.all()
 
@@ -214,9 +215,41 @@ def deletar_professor(nome: str):
         }
 """ 
 
+@app.get("/enviar_professores", status_code=200)
+async def get_all_professores():
+    professores_to_send = []
+    logger.info('Coletando as informações dos professores no banco de dados')
+    try:
+        professores_query = session.query(Professor)
+        professores = professores_query.all()
+
+        for professor in professores:
+            item = {
+                "id": professor.id,
+                "nome": professor.nome,
+                "email": professor.email,
+                "cpf": professor.cpf,
+                "endereco": professor.endereco
+            }
+            professor_serializer = Request_Professor(**item)            
+            professores_to_send.append(professor_serializer)
+
+        publisher = Publisher(config, 'professores')  
+        logger.info('Enviando mensagem para o RabbitMQ')       
+
+        for professor in professores_to_send:
+            publisher.publish('routing_key', professor.model_dump_json().encode())
+    except Exception as e:
+         logger.error(f'Erro na consulta dos alunos -- get_all_professores() -- {e}')
+         print(e)
+    return {
+        "status": "SUCESS",
+        "result": "OK"
+    }
+
 ## ----------------------- CURSO  ----------------------- 
 @app.get("/cursos")
-async def get_all_cursos():
+async def get_cursos():
     cursos_query = session.query(Curso)
     cursos = cursos_query.all()
     return {
@@ -288,9 +321,38 @@ def deletar_curso(descricao: str):
         }
 """
 
+@app.get("/enviar_cursos", status_code=200)
+async def get_all_cursos():
+    cursos_to_send = []
+    logger.info('Coletando as informações dos cursos no banco de dados')
+    try:
+        cursos_query = session.query(Curso)
+        cursos = cursos_query.all()
+
+        for curso in cursos:
+            item = {
+                "id": curso.id,
+                "descricao": curso.descricao
+            }
+            curso_serializer = Request_Curso(**item)            
+            cursos_to_send.append(curso_serializer)
+        
+        publisher = Publisher(config, 'cursos')  
+        logger.info('Enviando mensagem para o RabbitMQ')      
+
+        for curso in cursos_to_send: 
+            publisher.publish('routing_key', curso.model_dump_json().encode())
+    except Exception as e:
+         logger.error(f'Erro na consulta dos alunos -- get_all_cursos() -- {e}')
+         print(e)
+    return {
+        "status": "SUCESS",
+        "result": "OK"
+    }
+
 ## ----------------------- CURSO - ALUNO ----------------------- 
 @app.get("/curso_alunos")
-async def get_all_alunos_curso():
+async def get_alunos_curso():
     alunos_curso_query = session.query(CursoAluno)
     alunos_curso = alunos_curso_query.all()
     return {
@@ -374,9 +436,39 @@ def deletar_aluno_curso(aluno_nome: str, curso_descricao: str):
         }
 """
 
+@app.get("/enviar_curso_alunos", status_code=200)
+async def get_all_curso_alunos():
+    curso_alunos_to_send = []
+    logger.info('Coletando as informações dos alunos de cada curso no banco de dados')
+    try:
+        curso_alunos_query = session.query(CursoAluno)
+        curso_alunos = curso_alunos_query.all()
+
+        for curso_aluno in curso_alunos:
+            item = {
+                "id_aluno": curso_aluno.idAluno,
+                "id_curso": curso_aluno.idCurso
+            }
+
+            curso_aluno_serializer = Request_Curso_Aluno(**item)          
+            curso_alunos_to_send.append(curso_aluno_serializer)
+        
+        publisher = Publisher(config, 'curso_alunos')  
+        logger.info('Enviando mensagem para o RabbitMQ')      
+
+        for curso_aluno in curso_alunos_to_send:
+            publisher.publish('routing_key', curso_aluno.model_dump_json().encode())
+    except Exception as e:
+         logger.error(f'Erro na consulta dos alunos -- get_all_curso_alunos() -- {e}')
+         print(e)
+    return {
+        "status": "SUCESS",
+        "result": "OK"
+    }
+
 ## ----------------------- CURSO - PROFESSOR ----------------------- 
 @app.get("/curso_professor")
-async def get_all_professor_cursos():
+async def get_professor_cursos():
     professor_curso_query = session.query(CursoProfessor)
     professor_curso = professor_curso_query.all()
     return {
@@ -459,3 +551,33 @@ def deletar_professor_curso(professor_nome: str, curso_descricao: str):
             "data": "PROFESSOR/CURSO NÃO ENCONTRADO"
         }
 """
+
+@app.get("/enviar_curso_professor", status_code=200)
+async def get_all_curso_professor():
+    curso_professor_to_send = []
+    logger.info('Coletando as informações dos alunos de cada curso no banco de dados')
+    try:
+        curso_professores_query = session.query(CursoProfessor)
+        curso_professores = curso_professores_query.all()
+
+        for curso_professor in curso_professores:
+            item = {
+                "id_professor": curso_professor.idProfessor,
+                "id_curso": curso_professor.idCurso
+            }
+
+            curso_professor_serializer = Request_Curso_Professor(**item)          
+            curso_professor_to_send.append(curso_professor_serializer)
+        
+        publisher = Publisher(config, 'curso_professor')  
+        logger.info('Enviando mensagem para o RabbitMQ')      
+
+        for curso_professor in curso_professor_to_send:
+            publisher.publish('routing_key', curso_professor.model_dump_json().encode())
+    except Exception as e:
+         logger.error(f'Erro na consulta dos professores de cursos -- get_all_curso_professor() -- {e}')
+         print(e)
+    return {
+        "status": "SUCESS",
+        "result": "OK"
+    }

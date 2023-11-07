@@ -1,0 +1,10 @@
+
+Criar todos métodos para curso, professor, curso_professor, curso_aluno
+
+
+docker start 1de6f
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management &
+uvicorn main:app --reload
+
+http://localhost:15672/ 
+http://127.0.0.1:8000/docs

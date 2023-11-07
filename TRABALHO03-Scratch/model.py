@@ -8,7 +8,7 @@ url = URL.create(
     username='postgres',
     password='banco',
     host='localhost',
-    database='postgres',
+    database='trabalho03',
     port=5432
 )
 
