@@ -1,10 +1,24 @@
 A base de dados postgres vai rodar dentro do kubernetes, e não local.
 Lembrar de mudar host e configurações.
+Se der erro, restarta tudo, pois o minikube pode apontar algum comando para ajudar.
 
-    minikube start -> iniciar minikube
-    minikube addons enable metrics NÃO TENHO CERTEZA -> para habilitar as métricas do k8 
-    Criar imagem com "sudo docker build" -> criar imagem do docker
-    kubectl create -f postgres-config.yaml
-    kubectl create -f app.yaml -> criar aplicação dentro da pasta /k8s
-    port-forward --address=0.0.0.0 service/app-service 8000:8000 & ???
-    minikube dashboard -> abrir visualização no site.
+    minikube start 
+        -> iniciar minikube
+    comandos que o minikube mandar (eval, etc)
+    minikube addons enable metrics-server 
+        -> para habilitar as métricas do k8 
+    Criar imagem com "sudo docker build -t app-asa01:1.1 . no-cache" 
+        -> criar imagem do docker
+    cd k8s
+
+    kubectl create -f postgres-config.yaml                   
+        -> criar aplicação dentro da pasta /k8s
+    kubectl create -f app.yaml                                          
+        -> criar aplicação dentro da pasta /k8s
+    port-forward --address=0.0.0.0 service/app-service 8000:8000 & 
+        -> portforward
+    minikube dashboard 
+        -> abrir visualização no site.
+
+    kubectl get hpa -w
+        -> info do deploy
