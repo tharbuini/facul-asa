@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+data:
+  POSTGRES_HOST: '10.14.81.182'
+  POSTGRES_USER: postgres
+  POSTGRES_PASS: banco
+  POSTGRES_DATABASE: postgres
+  POSTGRES_DRIVERNAME: postgresql+psycopg2
+  POSTGRES_PORT: '5432'
