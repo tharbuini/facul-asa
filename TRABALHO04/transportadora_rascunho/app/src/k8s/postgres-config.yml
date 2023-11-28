@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+data:
+  POSTGRES_HOST: localhost
+  POSTGRES_USER: admin
+  POSTGRES_PASS: admin
+  POSTGRES_DATABASE: postgres
+  POSTGRES_DRIVERNAME: postgresql+psycopg2
+  POSTGRES_PORT: '5432'

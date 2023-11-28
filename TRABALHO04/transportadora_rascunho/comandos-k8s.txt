@@ -1,0 +1,55 @@
+Comandos que usei para o minikube:
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+na pasta do projeto:
+minikube start 
+    -> iniciar minikube
+    
+minikube addons enable metrics-server 
+    -> para habilitar as métricas do k8 
+    
+sudo docker buildx build --no-cache -t app-transportadora . 
+    -> criar imagem do docker
+    
+sudo docker run -d --name app-transportadora app-transportadora
+
+# Construa as imagens e adicione-as ao repositório local do Docker
+cd publisher
+docker build -t publisher-image:latest -f Dockerfile . --no-cache
+
+cd ..
+
+cd subscriber
+docker build -t subscriber-image:latest -f Dockerfile . --no-cache
+
+cd ..
+
+cd k8s
+
+# Aplique os arquivos YAML no Kubernetes
+minikube kubectl -- apply -f rabbitmq.yml
+minikube kubectl -- apply -f adminer.yml
+minikube kubectl -- apply -f publisher.yml
+minikube kubectl -- apply -f subscriber.yml
+
+# Caso seja necessário deletar
+minikube kubectl -- delete -f publisher.yml
+minikube kubectl -- delete -f subscriber.yml
+minikube kubectl -- delete -f rabbitmq.yml
+minikube kubectl -- delete -f adminer.yml
+ 
+minikube kubectl -- port-forward --address=0.0.0.0 service/publisher-service 8000:80 &
+minikube kubectl -- port-forward --address=0.0.0.0 service/subscriber-service 8001:80 &
+    -> portforward não ta funcionando pois o pod não roda
+
+minikube dashboard 
+    -> abrir visualização no site.           
+
+# Push da imagem no meu repositório
+docker tag publisher-image:latest tharbuini/trabalho-final-asa:publisher
+docker tag subscriber-image:latest tharbuini/trabalho-final-asa:subscriber
+
+docker push tharbuini/trabalho-final-asa:publisher
+docker push tharbuini/trabalho-final-asa:subscriber
+
