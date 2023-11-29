@@ -2,23 +2,12 @@ Comandos que usei para o minikube:
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-na pasta do projeto:
+
 minikube start 
-    -> iniciar minikube
     
 minikube addons enable metrics-server 
-    -> para habilitar as métricas do k8 
-
 minikube addons enable ingress
-
-minikube tunnel 
-    -> em outro terminal
     
-sudo docker buildx build --no-cache -t app-transportadora . 
-    -> criar imagem do docker
-    
-sudo docker run -d --name app-transportadora app-transportadora
-
 # Construa as imagens e adicione-as ao repositório local do Docker
 cd publisher
 docker build -t publisher-image:latest -f Dockerfile . --no-cache
@@ -31,10 +20,9 @@ docker build -t subscriber-image:latest -f Dockerfile . --no-cache
 docker tag subscriber-image:latest tharbuini/trabalho-final-asa:subscriber
 docker push tharbuini/trabalho-final-asa:subscriber
 
+# Aplique os arquivos YAML no Kubernetes
 cd ..
 cd k8s
-
-# Aplique os arquivos YAML no Kubernetes
 kubectl apply -f adminer.yml
 kubectl apply -f postgres-configmap.yml
 kubectl apply -f postgres.yml
@@ -49,18 +37,7 @@ kubectl delete -f postgres.yml
 kubectl delete -f rabbitmq.yml
 kubectl delete -f app-publisher.yml
 kubectl delete -f app-subscriber.yml
- 
-kubectl port-forward --address=0.0.0.0 service/publisher-service 8000:80 &
-kubectl port-forward --address=0.0.0.0 service/subscriber-service 8001:80 &
-    -> portforward não ta funcionando pois o pod não roda
 
-minikube dashboard 
-    -> abrir visualização no site.           
+minikube dashboard          
 
-# Push da imagem no meu repositório
-docker tag publisher-image:latest tharbuini/trabalho-final-asa:publisher
-docker tag subscriber-image:latest tharbuini/trabalho-final-asa:subscriber
-
-docker push tharbuini/trabalho-final-asa:publisher
-docker push tharbuini/trabalho-final-asa:subscriber
 

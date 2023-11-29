@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rabbitmq
+  name: rabbitmq-deployment
 spec:
   selector:
     matchLabels:
@@ -20,35 +20,23 @@ spec:
           containerPort: 5672
         - name: rabbitmq-mgm
           containerPort: 15672
-      restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: rabbitmq-service
 spec:
-  ports:
-    - name: rabbimq-server
-      protocol: TCP
-      port: 5672
-      targetPort: 5672
-    - name: rabbimq-server-mgm
-      protocol: TCP
-      port: 15672
-      targetPort: 15672
   selector:
     app: rabbitmq
   type: LoadBalancer
----
-apiVersion: v1
-kind: Endpoints
-metadata:
-  name: rabbitmq-endpoint
-subsets:
-  - addresses:
-      - ip: rabbitmq-service
-    ports:
-      - port: 5672
-        name: rabbitmq-server
-      - port: 15672
-        name: rabbitmq-mgm
+  ports:
+  - name: rabbimq-server-port
+    protocol: TCP
+    port: 5672
+    targetPort: 5672
+    nodePort: 30003
+  - name: rabbimq-server-mgm-port
+    protocol: TCP
+    port: 15672
+    targetPort: 15672
+    nodePort: 30004

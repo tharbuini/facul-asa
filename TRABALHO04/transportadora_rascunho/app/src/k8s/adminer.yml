@@ -46,18 +46,3 @@ spec:
       port: 8080
       targetPort: 8080
       nodePort: 30000
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: adminer-service
-#  labels:
-#    group: db
-#spec:
-#  selector:
-#    app: adminer
-#  type: ClusterIP
-#  ports:
-#    - protocol: TCP
-#      port: 8080
-#      targetPort: 8080

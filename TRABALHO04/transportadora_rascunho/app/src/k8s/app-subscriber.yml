@@ -18,18 +18,22 @@ spec:
       containers:
       - name: subscriber
         image: tharbuini/trabalho-final-asa:subscriber
-        imagePullPolicy: Never
         ports:
-        - containerPort: 8001
+        - containerPort: 5432
         env:
         - name: PS_DATABASE_URL
           valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: postgres-database-url
+            configMapKeyRef:
+              name: postgres-configmap
+              key: POSTGRES_URL
         envFrom:
         - configMapRef:
-            name: postgres-config
+            name: postgres-configmap
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: guest
+        - name: RABBITMQ_DEFAULT_PASS
+          value: guest
 ---
 apiVersion: v1
 kind: Service
@@ -40,8 +44,9 @@ metadata:
 spec:
   selector:
     app: subscriber
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8001
   type: LoadBalancer 
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5432
+    nodePort: 30002
