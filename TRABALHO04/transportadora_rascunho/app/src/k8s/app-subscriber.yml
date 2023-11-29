@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: subscriber-deployment
+  labels:
+    group: backend
 spec:
   replicas: 1
   selector:
@@ -11,6 +13,7 @@ spec:
     metadata:
       labels:
         app: subscriber
+        group: backend
     spec:
       containers:
       - name: subscriber
@@ -19,13 +22,21 @@ spec:
         ports:
         - containerPort: 8001
         env:
-          - name: RABBITMQ_HOST
-            value: rabbitmq-service
+        - name: PS_DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-database-url
+        envFrom:
+        - configMapRef:
+            name: postgres-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: subscriber-service
+  labels:
+    group: backend
 spec:
   selector:
     app: subscriber
@@ -33,4 +44,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8001
-  type: LoadBalancer  # Use NodePort se estiver usando o Minikube
+  type: LoadBalancer 

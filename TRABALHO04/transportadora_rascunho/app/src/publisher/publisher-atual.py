@@ -43,7 +43,7 @@ app = FastAPI()
 # PUBLISHER
 async def publish_message(tipo: str, tabela: str, message: str):
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq-service'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         channel = connection.channel()
         channel.queue_declare(queue='transportadora_queue')
 
@@ -318,12 +318,3 @@ async def delete_pedido_api(pedido_id: int):
         "data": pedido
     }
 
-# ========================================================================================
-
-# Abrindo guias para monitoramento
-# import webbrowser
-# import time
-# time.sleep(3)
-# webbrowser.open('localhost:8080', new=2)
-# time.sleep(5)
-# webbrowser.open('localhost:8000/docs/', new=2)

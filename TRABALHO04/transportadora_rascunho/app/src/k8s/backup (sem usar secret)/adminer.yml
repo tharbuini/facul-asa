@@ -25,11 +25,20 @@ spec:
         - name: ADMINER_DESIGN
           value: pepa-linha
         - name: ADMINER_DEFAULT_SERVER
-          value: postgres
-        resources:
-            limits:
-              memory: "256Mi"
-              cpu: "500m"
+          valueFrom:
+            secretKeyRef:
+              name: postgres-configmap
+              key: POSTGRES_DATABASE
+        - name: ADMINER_DEFAULT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-root-username 
+        - name: ADMINER_DEFAULT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-root-password 
 ---
 apiVersion: v1
 kind: Service

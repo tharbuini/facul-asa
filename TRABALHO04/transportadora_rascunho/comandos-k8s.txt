@@ -8,6 +8,11 @@ minikube start
     
 minikube addons enable metrics-server 
     -> para habilitar as métricas do k8 
+
+minikube addons enable ingress
+
+minikube tunnel 
+    -> em outro terminal
     
 sudo docker buildx build --no-cache -t app-transportadora . 
     -> criar imagem do docker
@@ -17,30 +22,36 @@ sudo docker run -d --name app-transportadora app-transportadora
 # Construa as imagens e adicione-as ao repositório local do Docker
 cd publisher
 docker build -t publisher-image:latest -f Dockerfile . --no-cache
+docker tag publisher-image:latest tharbuini/trabalho-final-asa:publisher
+docker push tharbuini/trabalho-final-asa:publisher
 
 cd ..
-
 cd subscriber
 docker build -t subscriber-image:latest -f Dockerfile . --no-cache
+docker tag subscriber-image:latest tharbuini/trabalho-final-asa:subscriber
+docker push tharbuini/trabalho-final-asa:subscriber
 
 cd ..
-
 cd k8s
 
 # Aplique os arquivos YAML no Kubernetes
-minikube kubectl -- apply -f rabbitmq.yml
-minikube kubectl -- apply -f adminer.yml
-minikube kubectl -- apply -f publisher.yml
-minikube kubectl -- apply -f subscriber.yml
+kubectl apply -f adminer.yml
+kubectl apply -f postgres-configmap.yml
+kubectl apply -f postgres.yml
+kubectl apply -f rabbitmq.yml
+kubectl apply -f app-publisher.yml
+kubectl apply -f app-subscriber.yml
 
 # Caso seja necessário deletar
-minikube kubectl -- delete -f publisher.yml
-minikube kubectl -- delete -f subscriber.yml
-minikube kubectl -- delete -f rabbitmq.yml
-minikube kubectl -- delete -f adminer.yml
+kubectl delete -f adminer.yml
+kubectl delete -f postgres-configmap.yml
+kubectl delete -f postgres.yml
+kubectl delete -f rabbitmq.yml
+kubectl delete -f app-publisher.yml
+kubectl delete -f app-subscriber.yml
  
-minikube kubectl -- port-forward --address=0.0.0.0 service/publisher-service 8000:80 &
-minikube kubectl -- port-forward --address=0.0.0.0 service/subscriber-service 8001:80 &
+kubectl port-forward --address=0.0.0.0 service/publisher-service 8000:80 &
+kubectl port-forward --address=0.0.0.0 service/subscriber-service 8001:80 &
     -> portforward não ta funcionando pois o pod não roda
 
 minikube dashboard 

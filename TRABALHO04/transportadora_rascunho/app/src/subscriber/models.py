@@ -9,7 +9,7 @@ db_url = URL.create(
     drivername='postgresql+psycopg2',
     username='admin',
     password='admin',
-    host='postgresql-service',
+    host='localhost',
     database='postgres',
     port=5432
 )

@@ -14,52 +14,41 @@ spec:
     spec:
       containers:
       - name: rabbitmq
-        image: rabbitmq:3.10-management
+        image: rabbitmq
         ports:
-        - 
-          name: rabbitmq-server
+        - name: rabbitmq-server
           containerPort: 5672
-        -
-          name: rabbitmq-mgm
+        - name: rabbitmq-mgm
           containerPort: 15672
       restartPolicy: Always
 ---
-apiVersion: "v1"
-kind: "Service"
+apiVersion: v1
+kind: Service
 metadata:
-  name: "rabbitmq-service"
+  name: rabbitmq-service
 spec:
-  #clusterIP: None
   ports:
-    -
-      name: "rabbimq-server"
-      protocol: "TCP"
+    - name: rabbimq-server
+      protocol: TCP
       port: 5672
       targetPort: 5672
-      # nodePort: 0
-    -
-      name: "rabbimq-server-mgm"
-      protocol: "TCP"
+    - name: rabbimq-server-mgm
+      protocol: TCP
       port: 15672
       targetPort: 15672
-      # nodePort: 0
   selector:
     app: rabbitmq
   type: LoadBalancer
 ---
-apiVersion: "v1"
-kind: "Endpoints"
+apiVersion: v1
+kind: Endpoints
 metadata:
-  name: "rabbitmq-endpoint"
+  name: rabbitmq-endpoint
 subsets:
-  -
-    addresses:
-      -
-        ip: "10.128.0.27"
+  - addresses:
+      - ip: rabbitmq-service
     ports:
-      -
-        port: 5672
-        name: "rabbitmq-server"
-      - 
-        port: 15672
-        name: "rabbitmq-mgm"
+      - port: 5672
+        name: rabbitmq-server
+      - port: 15672
+        name: rabbitmq-mgm

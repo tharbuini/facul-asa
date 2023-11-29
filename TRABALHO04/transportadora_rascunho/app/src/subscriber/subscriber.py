@@ -185,7 +185,7 @@ def inserir_no_banco(objeto):
 
 async def subscriber():
     credentials = pika.PlainCredentials('guest', 'guest')
-    parameters = pika.ConnectionParameters('rabbitmq-service', 5672, '/', credentials)
+    parameters = pika.ConnectionParameters('localhost', 5672, '/', credentials)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
     channel.queue_declare(queue='transportadora_queue')
