@@ -1,0 +1,2 @@
+sudo chown -R _apt:root /var/lib/apt/lists
+sudo apt install ./code_1.84.2-1699528352_amd64.deb
