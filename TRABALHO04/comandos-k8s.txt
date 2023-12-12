@@ -1,0 +1,47 @@
+Comandos que usei para o minikube:
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+
+minikube start 
+    
+minikube addons enable metrics-server 
+minikube addons enable ingress
+    
+# Construa as imagens e adicione-as ao repositório local do Docker
+cd publisher
+docker build -t publisher-image:latest -f Dockerfile . --no-cache
+docker tag publisher-image:latest tharbuini/trabalho-final-asa:publisher
+docker push tharbuini/trabalho-final-asa:publisher
+
+cd ../subscriber
+docker build -t subscriber-image:latest -f Dockerfile . --no-cache
+docker tag subscriber-image:latest tharbuini/trabalho-final-asa:subscriber
+docker push tharbuini/trabalho-final-asa:subscriber
+
+# Aplique os arquivos YAML no Kubernetes
+cd ../k8s
+kubectl apply -f postgres-configmap.yml
+kubectl apply -f postgres-pvc.yml
+kubectl apply -f adminer.yml
+kubectl apply -f postgres.yml
+kubectl apply -f rabbitmq.yml
+kubectl apply -f app-publisher.yml
+kubectl apply -f app-subscriber.yml
+
+# Caso seja necessário deletar
+kubectl delete -f postgres-configmap.yml
+kubectl delete -f adminer.yml
+kubectl delete -f postgres.yml
+kubectl delete -f rabbitmq.yml
+kubectl delete -f app-publisher.yml
+kubectl delete -f app-subscriber.yml
+
+minikube dashboard          
+
+minikube service publisher-service
+minikube service adminer-service
+minikube service rabbitmq-service
+
+ALTERAR OS IPS DOS ARQUIVOS models.py, subscriber.py e publisher.py
+kubectl port-forward service/rabbitmq-service 80:15672

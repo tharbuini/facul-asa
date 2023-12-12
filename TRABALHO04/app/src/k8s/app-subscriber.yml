@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscriber-deployment
+  labels:
+    group: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscriber
+  template:
+    metadata:
+      labels:
+        app: subscriber
+        group: backend
+    spec:
+      containers:
+      - name: subscriber
+        image: tharbuini/trabalho-final-asa:subscriber
+        ports:
+        - containerPort: 8001
+        env:
+        - name: PS_DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-configmap
+              key: POSTGRES_URL
+        envFrom:
+        - configMapRef:
+            name: postgres-configmap
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: guest
+        - name: RABBITMQ_DEFAULT_PASS
+          value: guest
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscriber-service
+  labels:
+    group: backend
+spec:
+  selector:
+    app: subscriber
+  type: LoadBalancer 
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8001

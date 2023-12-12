@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+  labels:
+    app: rabbitmq
+    group: backend
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        group: backend
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq
+        ports:
+        - name: http
+          protocol: TCP
+          containerPort: 15672
+        - name: amqp
+          protocol: TCP
+          containerPort: 5672
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  labels:
+    group: backend  
+spec:
+  selector:
+    app: rabbitmq
+  type: LoadBalancer
+  ports:
+   - name: http
+     protocol: TCP
+     port: 15672
+     targetPort: 15672
+     nodePort: 31672
+   - name: amqp
+     protocol: TCP
+     port: 5672
+     targetPort: 5672
+     nodePort: 30672
+
+  
